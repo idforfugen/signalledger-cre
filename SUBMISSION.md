@@ -81,11 +81,10 @@ Show the successful CRE CLI simulation output and the test run. End on the hard 
 
 - [ ] CRE Platform login completed
 - [ ] Official CRE CLI simulation succeeds and output is captured
-- [ ] Public GitHub repository pushed
-- [ ] CI passes on GitHub
+- [x] Public GitHub repository pushed
+- [x] CI passes on GitHub
 - [ ] GitHub Pages demo is publicly reachable
 - [ ] Repository and demo URLs added to DoraHacks
 - [ ] Both bounties selected
 - [ ] Two-minute demo video recorded and linked
 - [ ] User reviews and accepts the final submission terms
-

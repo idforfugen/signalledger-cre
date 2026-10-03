@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="glow" cx="75%" cy="20%" r="70%">
+      <stop offset="0" stop-color="#1b5943" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#07110f" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="3" seed="7"/>
+      <feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 .05 0"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="#07110f"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <rect width="1200" height="630" filter="url(#grain)" opacity=".35"/>
+  <circle cx="75" cy="67" r="27" fill="#71f5bd"/>
+  <text x="75" y="72" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#07110f">SL</text>
+  <text x="118" y="76" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#f4f2e9">SignalLedger</text>
+  <text x="72" y="183" font-family="Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="4" fill="#71f5bd">CHAINLINK CRE · VERIFIED WORKFLOW</text>
+  <text x="68" y="302" font-family="Georgia, serif" font-size="104" fill="#f4f2e9">Evidence in.</text>
+  <text x="68" y="407" font-family="Georgia, serif" font-size="104" font-style="italic" fill="#71f5bd">Auditable decisions</text>
+  <text x="68" y="505" font-family="Georgia, serif" font-size="104" fill="#f4f2e9">out.</text>
+  <line x1="72" y1="570" x2="1128" y2="570" stroke="#dcebe4" stroke-opacity=".18"/>
+  <text x="72" y="603" font-family="Arial, sans-serif" font-size="17" fill="#9ca9a3">Two external feeds · Sepolia USDC state · deterministic practice policy · Keccak-256 proof</text>
+</svg>
+

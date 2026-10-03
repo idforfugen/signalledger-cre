@@ -8,7 +8,13 @@
       content="SignalLedger turns off-chain market evidence and on-chain state into deterministic, auditable practice decisions with Chainlink CRE."
     />
     <meta name="theme-color" content="#07110f" />
+    <meta property="og:title" content="SignalLedger — Auditable practice decisions" />
+    <meta property="og:description" content="A verified Chainlink CRE workflow for evidence-backed market-risk decisions." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://idforfugen.github.io/signalledger-cre/" />
+    <meta property="og:image" content="https://idforfugen.github.io/signalledger-cre/og-card.svg" />
     <title>SignalLedger — Evidence in. Auditable decisions out.</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -20,6 +26,7 @@
       </a>
       <div class="nav-links">
         <a href="#lab">Scenario lab</a>
+        <a href="#proof">Proof</a>
         <a href="#architecture">Architecture</a>
         <a class="github-link" href="https://github.com/idforfugen/signalledger-cre">View source ↗</a>
       </div>
@@ -78,6 +85,29 @@
             <p>No configured edge; preserve optionality. Evidence was fresh and chain state was valid.</p>
             <div class="decision-meta"><span>Risk 10/100</span><span>Cap 0%</span></div>
           </article>
+        </div>
+      </section>
+
+      <section class="proof-wrap" id="proof">
+        <div class="proof shell">
+          <div class="proof-intro">
+            <p class="kicker">Verified CRE run · 2026-10-04</p>
+            <h2>Not a mock.<br />The workflow ran.</h2>
+            <p>
+              CRE CLI v1.36.0 compiled the TypeScript workflow to WASM, reconciled both
+              HTTP feeds, read Sepolia USDC state, and returned a deterministic decision.
+            </p>
+            <a href="https://github.com/idforfugen/signalledger-cre/blob/main/evidence/cre-simulation.md">Inspect the complete evidence ↗</a>
+          </div>
+          <div class="proof-terminal" aria-label="Verified CRE simulation hashes">
+            <div class="terminal-top"><span></span><span></span><span></span><b>CRE SIMULATION</b></div>
+            <div class="terminal-row"><span>STATUS</span><strong>✓ Simulation complete</strong></div>
+            <div class="terminal-row"><span>ACTION</span><strong>HOLD · risk 10/100</strong></div>
+            <div class="terminal-row hash"><span>BINARY</span><code>0a2d5d9a446af31e5642cbee9b787a49a76cdf48133c272e8fb917068ab97689</code></div>
+            <div class="terminal-row hash"><span>CONFIG</span><code>d9114c1996d7a9b6f890b5c8fb90c8aa5b873572820a2fd319e238f133335ef4</code></div>
+            <div class="terminal-row hash"><span>AUDIT</span><code>0xb08177f1727c954d495cc38849645be97863318f9001d402d01c6b021e62ba3e</code></div>
+            <div class="terminal-foot"><span class="pulse"></span> no broadcast · read only · practice only</div>
+          </div>
         </div>
       </section>
 

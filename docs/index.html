@@ -101,9 +101,9 @@
                 <small>Extreme fear or greed adds risk.</small>
               </label>
               <label>
-                <span><b>Evidence age</b><output id="age-output">8 min</output></span>
+                <span><b>Market-feed age</b><output id="age-output">8 min</output></span>
                 <input id="age" type="range" min="0" max="120" value="8" step="1" />
-                <small>Evidence older than 60 minutes blocks the decision.</small>
+                <small>Fast-market evidence older than 60 minutes blocks the decision; daily sentiment has a separate 26-hour window.</small>
               </label>
               <label class="toggle-row">
                 <span><b>On-chain supply check</b><small>Must return a positive value.</small></span>
@@ -158,4 +158,3 @@
     <script src="app.js"></script>
   </body>
 </html>
-

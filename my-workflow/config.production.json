@@ -10,7 +10,7 @@
     "isTestnet": true
   },
   "risk": {
-    "maxDataAgeSeconds": 3600
+    "marketMaxAgeSeconds": 3600,
+    "sentimentMaxAgeSeconds": 93600
   }
 }
-

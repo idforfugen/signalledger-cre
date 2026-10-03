@@ -31,7 +31,7 @@ CRE cron trigger
                                                                          └── Keccak-256 audit hash
 ```
 
-The policy can return `HOLD`, `PRACTICE_LONG`, `WATCH_REVERSAL`, `REDUCE_EXPOSURE`, or `BLOCKED_STALE_OR_INVALID`. Every branch has a visible rule and an allocation ceiling. Stale evidence or an invalid chain read fails closed.
+The policy can return `HOLD`, `PRACTICE_LONG`, `WATCH_REVERSAL`, `REDUCE_EXPOSURE`, or `BLOCKED_STALE_OR_INVALID`. Every branch has a visible rule and an allocation ceiling. Fast market evidence has a one-hour freshness window; the daily sentiment index has a separate 26-hour window. Stale evidence or an invalid chain read fails closed.
 
 ## Bounty fit
 
@@ -75,7 +75,7 @@ Then open `http://localhost:8080`.
 
 | Condition | Practice output | Allocation ceiling |
 |---|---:|---:|
-| Evidence older than 60 minutes or invalid on-chain supply | `BLOCKED_STALE_OR_INVALID` | 0% |
+| Market evidence older than 60 minutes, daily sentiment older than 26 hours, or invalid on-chain supply | `BLOCKED_STALE_OR_INVALID` | 0% |
 | Combined risk score ≥ 70 | `REDUCE_EXPOSURE` | 20% |
 | 24h change ≥ 3% and sentiment is 45–75 | `PRACTICE_LONG` | 25% |
 | 24h change ≤ -3% and sentiment ≤ 35 | `WATCH_REVERSAL` | 10% |

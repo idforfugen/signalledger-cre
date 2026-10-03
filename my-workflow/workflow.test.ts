@@ -26,7 +26,7 @@ const config: Config = {
     decimals: 6,
     isTestnet: true,
   },
-  risk: { maxDataAgeSeconds: 3600 },
+  risk: { marketMaxAgeSeconds: 3600, sentimentMaxAgeSeconds: 93600 },
 }
 
 const makeRequester = (body: unknown, statusCode = 200) =>
@@ -47,7 +47,8 @@ const baseInput = {
   stablecoinSupplyBaseUnits: 18_000_000_000_000n,
   stablecoinDecimals: 6,
   evaluatedAt: 1_700_000_300,
-  maxDataAgeSeconds: 3600,
+  marketMaxAgeSeconds: 3600,
+  sentimentMaxAgeSeconds: 93600,
 }
 
 describe('evidence adapters', () => {
@@ -110,13 +111,34 @@ describe('deterministic practice policy', () => {
     expect(result.maxAllocationBps).toBe(1000)
   })
 
-  test('blocks stale evidence', () => {
+  test('blocks stale market evidence', () => {
     const result = buildPracticeDecision({
       ...baseInput,
       evaluatedAt: baseInput.market.updatedAt + 7200,
     })
     expect(result.action).toBe('BLOCKED_STALE_OR_INVALID')
     expect(result.riskScore).toBeGreaterThanOrEqual(60)
+  })
+
+  test('accepts a current daily sentiment value older than one hour', () => {
+    const result = buildPracticeDecision({
+      ...baseInput,
+      market: { ...baseInput.market, updatedAt: 1_700_080_000 },
+      sentiment: { ...baseInput.sentiment, updatedAt: 1_700_000_000 },
+      evaluatedAt: 1_700_080_300,
+    })
+    expect(result.action).not.toBe('BLOCKED_STALE_OR_INVALID')
+  })
+
+  test('blocks sentiment older than its daily freshness window', () => {
+    const result = buildPracticeDecision({
+      ...baseInput,
+      market: { ...baseInput.market, updatedAt: 1_700_100_000 },
+      sentiment: { ...baseInput.sentiment, updatedAt: 1_700_000_000 },
+      evaluatedAt: 1_700_100_300,
+    })
+    expect(result.action).toBe('BLOCKED_STALE_OR_INVALID')
+    expect(result.rationale).toContain('sentiment evidence exceeded freshness limit')
   })
 
   test('produces the same audit hash for identical inputs', () => {

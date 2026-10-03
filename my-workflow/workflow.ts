@@ -23,7 +23,8 @@ export const configSchema = z.object({
     isTestnet: z.boolean(),
   }),
   risk: z.object({
-    maxDataAgeSeconds: z.number().int().positive(),
+    marketMaxAgeSeconds: z.number().int().positive(),
+    sentimentMaxAgeSeconds: z.number().int().positive(),
   }),
 })
 
@@ -63,7 +64,8 @@ interface DecisionInput {
   stablecoinSupplyBaseUnits: bigint
   stablecoinDecimals: number
   evaluatedAt: number
-  maxDataAgeSeconds: number
+  marketMaxAgeSeconds: number
+  sentimentMaxAgeSeconds: number
 }
 
 const assertFinite = (value: unknown, label: string): number => {
@@ -163,9 +165,11 @@ const riskFromSentiment = (fearGreed: number): number => {
 }
 
 export const buildPracticeDecision = (input: DecisionInput): PracticeDecision => {
-  const newestEvidenceAt = Math.min(input.market.updatedAt, input.sentiment.updatedAt)
-  const ageSeconds = Math.max(0, input.evaluatedAt - newestEvidenceAt)
-  const stale = ageSeconds > input.maxDataAgeSeconds
+  const marketAgeSeconds = Math.max(0, input.evaluatedAt - input.market.updatedAt)
+  const sentimentAgeSeconds = Math.max(0, input.evaluatedAt - input.sentiment.updatedAt)
+  const staleMarket = marketAgeSeconds > input.marketMaxAgeSeconds
+  const staleSentiment = sentimentAgeSeconds > input.sentimentMaxAgeSeconds
+  const stale = staleMarket || staleSentiment
   const invalidSupply = input.stablecoinSupplyBaseUnits <= 0n
 
   let riskScore = riskFromChange(input.market.change24hPct) + riskFromSentiment(input.sentiment.fearGreed)
@@ -178,12 +182,15 @@ export const buildPracticeDecision = (input: DecisionInput): PracticeDecision =>
   const rationale: string[] = [
     `24h change ${input.market.change24hPct.toFixed(2)}%`,
     `Fear & Greed ${input.sentiment.fearGreed.toFixed(0)}/100`,
-    `evidence age ${ageSeconds}s`,
+    `market evidence age ${marketAgeSeconds}s`,
+    `sentiment evidence age ${sentimentAgeSeconds}s`,
   ]
 
   if (stale || invalidSupply) {
     action = 'BLOCKED_STALE_OR_INVALID'
-    rationale.push(stale ? 'evidence exceeded freshness limit' : 'on-chain supply check failed')
+    if (staleMarket) rationale.push('market evidence exceeded freshness limit')
+    if (staleSentiment) rationale.push('sentiment evidence exceeded freshness limit')
+    if (invalidSupply) rationale.push('on-chain supply check failed')
   } else if (riskScore >= 70) {
     action = 'REDUCE_EXPOSURE'
     maxAllocationBps = 2000
@@ -211,6 +218,8 @@ export const buildPracticeDecision = (input: DecisionInput): PracticeDecision =>
     `marketUpdatedAt=${input.market.updatedAt}`,
     `fearGreed=${input.sentiment.fearGreed}`,
     `sentimentUpdatedAt=${input.sentiment.updatedAt}`,
+    `marketAgeSeconds=${marketAgeSeconds}`,
+    `sentimentAgeSeconds=${sentimentAgeSeconds}`,
     `stablecoinSupplyBaseUnits=${input.stablecoinSupplyBaseUnits.toString()}`,
     `stablecoinDecimals=${input.stablecoinDecimals}`,
     `evaluatedAt=${input.evaluatedAt}`,
@@ -271,7 +280,8 @@ export const onCronTrigger = (runtime: Runtime<Config>, payload: CronPayload): s
     stablecoinSupplyBaseUnits,
     stablecoinDecimals: runtime.config.stablecoin.decimals,
     evaluatedAt,
-    maxDataAgeSeconds: runtime.config.risk.maxDataAgeSeconds,
+    marketMaxAgeSeconds: runtime.config.risk.marketMaxAgeSeconds,
+    sentimentMaxAgeSeconds: runtime.config.risk.sentimentMaxAgeSeconds,
   })
 
   const result = {

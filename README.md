@@ -51,6 +51,7 @@ The policy can return `HOLD`, `PRACTICE_LONG`, `WATCH_REVERSAL`, `REDUCE_EXPOSUR
 - Produces a practice-only position decision and hard allocation cap
 - Records the precise rationale and a canonical, reproducible audit hash
 - Includes an interactive scenario lab that exposes every policy transition
+- Exports a portable, deterministic JSON audit record linked to the verified CRE run
 
 ## Run locally
 
@@ -59,6 +60,7 @@ Requirements: [Bun](https://bun.sh/) and the [CRE CLI](https://docs.chain.link/c
 ```bash
 bun install --cwd my-workflow
 bun test --cwd my-workflow
+bun test docs
 bun run --cwd my-workflow typecheck
 cre workflow simulate my-workflow --target staging-settings --trigger-index 0 --non-interactive
 ```

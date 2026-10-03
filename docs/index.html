@@ -157,6 +157,12 @@
                 <span>Canonical trace</span>
                 <code id="trace-value">change=3.2|sentiment=58|age=480|supply=valid</code>
               </div>
+              <div class="audit-export">
+                <button id="download-audit" type="button">
+                  Download audit record <span>JSON ↓</span>
+                </button>
+                <p id="download-status" aria-live="polite">Portable JSON · same evidence produces the same record</p>
+              </div>
             </article>
           </div>
         </div>
@@ -185,6 +191,6 @@
       <p>Built for BLI Legal Tech Hackathon 2 · Chainlink CRE + Autonomous Agents</p>
     </footer>
 
-    <script src="app.js"></script>
+    <script type="module" src="app.js?v=20261004-audit"></script>
   </body>
 </html>

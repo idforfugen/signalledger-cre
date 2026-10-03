@@ -14,5 +14,5 @@ jobs:
           bun-version: 1.4.2
       - run: bun install --cwd my-workflow --frozen-lockfile
       - run: bun test --cwd my-workflow
+      - run: bun test docs
       - run: bun run --cwd my-workflow typecheck
-

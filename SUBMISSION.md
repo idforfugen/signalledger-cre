@@ -35,7 +35,8 @@ The repository contains no signer, private key, transaction construction, or bro
 - Independent freshness windows for fast market data (1 hour) and daily sentiment (26 hours)
 - Fail-closed policy for stale evidence or invalid chain state
 - Deterministic risk score, practice action, allocation ceiling, rationale, and Keccak-256 trace
-- 15 passing unit and integration tests
+- Portable JSON audit record linked to the verified CRE run, with explicit no-sign/no-broadcast controls
+- 19 passing tests: 15 workflow/integration tests and 4 interactive audit-record tests
 - Successful official CRE CLI simulation with recorded binary/config hashes and decision trace
 - Strict TypeScript check
 - Responsive, zero-build interactive scenario lab
@@ -46,6 +47,7 @@ The repository contains no signer, private key, transaction construction, or bro
 ```bash
 bun install --cwd my-workflow
 bun test --cwd my-workflow
+bun test docs
 bun run --cwd my-workflow typecheck
 cre workflow simulate my-workflow --target staging-settings --trigger-index 0 --non-interactive
 ```
@@ -64,7 +66,7 @@ Show the three source cards: the BTC market ticker, Fear & Greed sentiment, and 
 Use the scenario lab. Move BTC change above 3% with mid-range sentiment to produce `PRACTICE_LONG`; move the market feed past 60 minutes to show `BLOCKED_STALE_OR_INVALID`; disable the chain-supply gate to show another fail-closed result.
 
 **1:20–1:45 — Reproducibility**  
-Show the canonical trace, then the workflow code that turns the trace into a Keccak-256 hash. Note that identical evidence produces the same audit hash.
+Show the canonical trace, download its portable JSON audit record, then show the workflow code that turns the trace into a Keccak-256 hash. Note that identical evidence produces the same record and audit hash.
 
 **1:45–2:00 — CRE proof and safety**  
 Show the successful CRE CLI simulation output and the test run. End on the hard boundary: no signer, no broadcast, no real trades.

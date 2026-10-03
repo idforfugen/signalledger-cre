@@ -18,7 +18,7 @@ Most market agents show a conclusion but hide the evidence path. Reviewers canno
 SignalLedger separates evidence collection, verification, policy, and execution:
 
 1. A CRE cron trigger starts a run every ten minutes.
-2. CRE nodes fetch CoinGecko market data and the Alternative.me Fear & Greed index.
+2. CRE nodes fetch the Alternative.me BTC market ticker and Fear & Greed index.
 3. Field-level median consensus reconciles the external evidence.
 4. A CRE EVM capability reads the Circle USDC `totalSupply` value on Ethereum Sepolia.
 5. A deterministic policy calculates risk and returns `HOLD`, `PRACTICE_LONG`, `WATCH_REVERSAL`, `REDUCE_EXPOSURE`, or `BLOCKED_STALE_OR_INVALID`.
@@ -29,13 +29,14 @@ The repository contains no signer, private key, transaction construction, or bro
 ## What is working
 
 - TypeScript CRE workflow built with `@chainlink/cre-sdk`
-- Two public HTTP evidence adapters
+- Two public HTTP evidence adapters (BTC market ticker and Fear & Greed)
 - Field-level DON consensus configuration
 - Read-only ERC-20 state query through the CRE EVM client
 - Independent freshness windows for fast market data (1 hour) and daily sentiment (26 hours)
 - Fail-closed policy for stale evidence or invalid chain state
 - Deterministic risk score, practice action, allocation ceiling, rationale, and Keccak-256 trace
-- 13 passing unit and integration tests
+- 15 passing unit and integration tests
+- Successful official CRE CLI simulation with recorded binary/config hashes and decision trace
 - Strict TypeScript check
 - Responsive, zero-build interactive scenario lab
 - GitHub Actions CI and Pages deployment workflows
@@ -57,7 +58,7 @@ The final command performs public HTTP reads and a Sepolia `eth_call`; it does n
 Open the landing page. Explain that market-agent outputs are hard to audit: reviewers need the evidence, freshness, rules, risk limits, and a reproducible trail.
 
 **0:20–0:50 — The evidence path**  
-Show the three source cards: CoinGecko market motion, Fear & Greed sentiment, and the Sepolia USDC contract read. Explain that CRE reconciles the external fields through DON consensus before policy evaluation.
+Show the three source cards: the BTC market ticker, Fear & Greed sentiment, and the Sepolia USDC contract read. Explain that CRE reconciles the external fields through DON consensus before policy evaluation.
 
 **0:50–1:20 — Cause and effect**  
 Use the scenario lab. Move BTC change above 3% with mid-range sentiment to produce `PRACTICE_LONG`; move the market feed past 60 minutes to show `BLOCKED_STALE_OR_INVALID`; disable the chain-supply gate to show another fail-closed result.
@@ -79,8 +80,8 @@ Show the successful CRE CLI simulation output and the test run. End on the hard 
 
 ## Final pre-submission checklist
 
-- [ ] CRE Platform login completed
-- [ ] Official CRE CLI simulation succeeds and output is captured
+- [x] CRE Platform login completed
+- [x] Official CRE CLI simulation succeeds and output is captured
 - [x] Public GitHub repository pushed
 - [x] CI passes on GitHub
 - [ ] GitHub Pages demo is publicly reachable

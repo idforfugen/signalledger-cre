@@ -6,6 +6,8 @@ SignalLedger is a Chainlink Runtime Environment (CRE) workflow that combines two
 
 [Open the interactive demo](https://idforfugen.github.io/signalledger-cre/) · Built for [BLI Legal Tech Hackathon 2](https://dorahacks.io/hackathon/legal-hack-2026/detail)
 
+**CRE proof:** the official CRE CLI simulation completed successfully on 2026-10-04. See the [verified output, binary hash, config hash, and decision trace](evidence/cre-simulation.md).
+
 ## Why it exists
 
 Autonomous financial agents are easy to demo and hard to audit. A reviewer should be able to answer:
@@ -23,7 +25,7 @@ SignalLedger makes those answers explicit. The output is practice-only decision 
 ```text
 CRE cron trigger
       │
-      ├── CoinGecko market evidence ── DON median consensus ─┐
+      ├── BTC market ticker ────────── DON median consensus ─┐
       ├── Fear & Greed evidence ────── DON median consensus ─┼── deterministic policy
       └── Sepolia USDC totalSupply ─── EVM capability ───────┘           │
                                                                          ├── practice action
@@ -39,9 +41,9 @@ The policy can return `HOLD`, `PRACTICE_LONG`, `WATCH_REVERSAL`, `REDUCE_EXPOSUR
 
 - TypeScript workflow using the official `@chainlink/cre-sdk`
 - Scheduled CRE trigger
-- Two external HTTP data sources, with field-level DON consensus aggregation
+- Two external HTTP evidence feeds, with field-level DON consensus aggregation
 - EVM capability reading Circle's USDC contract on Ethereum Sepolia
-- Local CLI simulation with no private key and no broadcast
+- Verified CRE CLI simulation with no user private key and no broadcast
 
 ### Autonomous Agents
 

@@ -4,6 +4,7 @@ import type { Address } from 'viem'
 import { newIERC20Mock } from './bindings/IERC20_mock'
 import {
   buildPracticeDecision,
+  configSchema,
   fetchMarketEvidence,
   fetchSentimentEvidence,
   initWorkflow,
@@ -52,14 +53,31 @@ const baseInput = {
 }
 
 describe('evidence adapters', () => {
-  test('parses CoinGecko market evidence', () => {
+  test('accepts HTTPS data sources without the browser URL global', () => {
+    expect(configSchema.safeParse(config).success).toBe(true)
+  })
+
+  test('rejects non-HTTPS data sources', () => {
+    expect(
+      configSchema.safeParse({ ...config, marketDataUrl: 'http://market.example/price' }).success,
+    ).toBe(false)
+  })
+
+  test('parses Alternative.me market evidence', () => {
     const result = fetchMarketEvidence(
       makeRequester({
-        bitcoin: {
-          usd: 64000,
-          usd_24h_change: 2.5,
-          usd_market_cap: 1_250_000_000_000,
-          last_updated_at: 1_700_000_000,
+        data: {
+          '1': {
+            website_slug: 'bitcoin',
+            last_updated: 1_700_000_000,
+            quotes: {
+              USD: {
+                price: 64000,
+                percentage_change_24h: 2.5,
+                market_cap: 1_250_000_000_000,
+              },
+            },
+          },
         },
       }),
       config,
@@ -70,7 +88,18 @@ describe('evidence adapters', () => {
 
   test('rejects incomplete market evidence', () => {
     expect(() =>
-      fetchMarketEvidence(makeRequester({ bitcoin: { usd: 64000 } }), config),
+      fetchMarketEvidence(
+        makeRequester({
+          data: {
+            '1': {
+              website_slug: 'bitcoin',
+              last_updated: 1_700_000_000,
+              quotes: { USD: { price: 64000 } },
+            },
+          },
+        }),
+        config,
+      ),
     ).toThrow('Invalid 24h change')
   })
 

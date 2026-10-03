@@ -14,8 +14,10 @@ import { IERC20 } from './bindings/IERC20'
 export const configSchema = z.object({
   schedule: z.string().min(1),
   assetId: z.string().min(1),
-  marketDataUrl: z.string().url(),
-  sentimentDataUrl: z.string().url(),
+  // Avoid z.string().url(): its implementation relies on the URL global, which
+  // is unavailable in the Javy WASM runtime used by CRE simulations.
+  marketDataUrl: z.string().regex(/^https:\/\/[^\s]+$/),
+  sentimentDataUrl: z.string().regex(/^https:\/\/[^\s]+$/),
   stablecoin: z.object({
     chainSelectorName: z.string().min(1),
     address: z.string().regex(/^0x[0-9a-fA-F]{40}$/),
@@ -88,14 +90,20 @@ export const fetchMarketEvidence = (
   }
 
   const body = JSON.parse(Buffer.from(response.body).toString('utf-8'))
-  const asset = body?.[config.assetId]
+  const rows = body?.data && typeof body.data === 'object' ? Object.values(body.data) : []
+  const asset = (rows as Array<any>).find((row) => row?.website_slug === config.assetId)
   if (!asset) throw new Error(`Market API did not return ${config.assetId}`)
 
+  const usd = asset.quotes?.USD
+
   const evidence = {
-    priceUsd: assertFinite(asset.usd, 'price'),
-    change24hPct: assertFinite(asset.usd_24h_change, '24h change'),
-    marketCapUsd: assertFinite(asset.usd_market_cap, 'market cap'),
-    updatedAt: assertFinite(asset.last_updated_at, 'market timestamp'),
+    priceUsd: assertFinite(usd?.price, 'price'),
+    change24hPct: assertFinite(
+      usd?.percentage_change_24h ?? usd?.percent_change_24h,
+      '24h change',
+    ),
+    marketCapUsd: assertFinite(usd?.market_cap, 'market cap'),
+    updatedAt: assertFinite(asset.last_updated, 'market timestamp'),
   }
 
   if (evidence.priceUsd <= 0 || evidence.marketCapUsd <= 0 || evidence.updatedAt <= 0) {

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="SignalLedger turns off-chain market evidence and on-chain state into deterministic, auditable practice decisions with Chainlink CRE."
+    />
+    <meta name="theme-color" content="#07110f" />
+    <title>SignalLedger — Evidence in. Auditable decisions out.</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="grain" aria-hidden="true"></div>
+    <header class="nav shell">
+      <a class="brand" href="#top" aria-label="SignalLedger home">
+        <span class="brand-mark">SL</span>
+        <span>SignalLedger</span>
+      </a>
+      <div class="nav-links">
+        <a href="#lab">Scenario lab</a>
+        <a href="#architecture">Architecture</a>
+        <a class="github-link" href="https://github.com/idforfugen/signalledger-cre">View source ↗</a>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero shell">
+        <div class="eyebrow"><span></span> Chainlink CRE workflow · practice only</div>
+        <h1>Evidence in.<br /><em>Auditable decisions</em> out.</h1>
+        <p class="hero-copy">
+          A deterministic market-risk agent that reconciles live APIs with on-chain state,
+          applies visible rules, and leaves a reproducible decision trail. No hidden model.
+          No autonomous fund movement.
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="#lab">Test the policy</a>
+          <a class="button secondary" href="#architecture">Trace the evidence</a>
+        </div>
+
+        <div class="status-row" aria-label="Workflow status">
+          <div><span class="pulse"></span><strong>CRE ready</strong><small>10-minute cadence</small></div>
+          <div><strong>2 external feeds</strong><small>DON-aggregated</small></div>
+          <div><strong>1 chain read</strong><small>Sepolia USDC</small></div>
+          <div><strong>0 real trades</strong><small>policy enforced</small></div>
+        </div>
+      </section>
+
+      <section class="flow shell" aria-labelledby="flow-title">
+        <div class="section-heading">
+          <p class="kicker">The evidence path</p>
+          <h2 id="flow-title">Every conclusion keeps its receipts.</h2>
+        </div>
+        <div class="flow-grid">
+          <article class="source-card">
+            <div class="source-top"><span>01</span><span class="live">LIVE API</span></div>
+            <h3>Market motion</h3>
+            <p>BTC price, 24-hour change, market cap, and freshness from CoinGecko.</p>
+            <div class="metric"><span>24h change</span><b>+3.20%</b></div>
+          </article>
+          <article class="source-card">
+            <div class="source-top"><span>02</span><span class="live">LIVE API</span></div>
+            <h3>Market sentiment</h3>
+            <p>Fear &amp; Greed supplies a second, independent context signal.</p>
+            <div class="metric"><span>Sentiment</span><b>58 / 100</b></div>
+          </article>
+          <article class="source-card">
+            <div class="source-top"><span>03</span><span class="chain">ON-CHAIN</span></div>
+            <h3>Settlement state</h3>
+            <p>CRE reads Sepolia USDC supply as a verifiable chain-health gate.</p>
+            <div class="metric"><span>Contract</span><b>0x1c7D…7238</b></div>
+          </article>
+          <article class="decision-card">
+            <div class="decision-label">DETERMINISTIC OUTPUT</div>
+            <div class="decision-icon">↗</div>
+            <h3>PRACTICE_LONG</h3>
+            <p>Positive momentum, non-extreme sentiment, fresh evidence, valid chain state.</p>
+            <div class="decision-meta"><span>Risk 20/100</span><span>Cap 25%</span></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="lab-wrap" id="lab">
+        <div class="lab shell">
+          <div class="section-heading narrow">
+            <p class="kicker">Interactive policy</p>
+            <h2>Change the evidence.<br />Watch the rule—not a black box—respond.</h2>
+          </div>
+
+          <div class="lab-grid">
+            <div class="controls" aria-label="Scenario controls">
+              <label>
+                <span><b>BTC 24h change</b><output id="change-output">+3.2%</output></span>
+                <input id="change" type="range" min="-15" max="15" value="3.2" step="0.1" />
+                <small>Volatility changes the base risk score.</small>
+              </label>
+              <label>
+                <span><b>Fear &amp; Greed</b><output id="sentiment-output">58</output></span>
+                <input id="sentiment" type="range" min="0" max="100" value="58" step="1" />
+                <small>Extreme fear or greed adds risk.</small>
+              </label>
+              <label>
+                <span><b>Evidence age</b><output id="age-output">8 min</output></span>
+                <input id="age" type="range" min="0" max="120" value="8" step="1" />
+                <small>Evidence older than 60 minutes blocks the decision.</small>
+              </label>
+              <label class="toggle-row">
+                <span><b>On-chain supply check</b><small>Must return a positive value.</small></span>
+                <input id="supply" type="checkbox" checked />
+                <i aria-hidden="true"></i>
+              </label>
+            </div>
+
+            <article class="result-panel" aria-live="polite">
+              <div class="result-head">
+                <span>POLICY RESULT</span>
+                <span class="practice-pill">PRACTICE ONLY</span>
+              </div>
+              <div class="score-ring" id="score-ring">
+                <div><b id="risk-score">20</b><span>risk / 100</span></div>
+              </div>
+              <p class="result-action" id="action">PRACTICE_LONG</p>
+              <p class="result-copy" id="rationale">Positive momentum with non-extreme sentiment.</p>
+              <div class="allocation"><span>Maximum simulated allocation</span><b id="allocation">25%</b></div>
+              <div class="trace">
+                <span>Canonical trace</span>
+                <code id="trace-value">change=3.2|sentiment=58|age=480|supply=valid</code>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="architecture shell" id="architecture">
+        <div class="section-heading">
+          <p class="kicker">CRE architecture</p>
+          <h2>Consensus first. Policy second. Proof always.</h2>
+        </div>
+        <div class="architecture-grid">
+          <article><span>1</span><h3>Trigger</h3><p>A CRE cron capability starts a run every ten minutes.</p></article>
+          <article><span>2</span><h3>Reconcile</h3><p>DON nodes fetch both external feeds and median-aggregate each field.</p></article>
+          <article><span>3</span><h3>Verify</h3><p>An EVM capability reads USDC supply from Ethereum Sepolia.</p></article>
+          <article><span>4</span><h3>Attest</h3><p>Visible rules produce a practice action and Keccak-256 audit hash.</p></article>
+        </div>
+        <div class="safety-note">
+          <strong>Hard safety boundary</strong>
+          <p>SignalLedger never signs or submits a trade. Its output is decision support for simulations and review.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="shell">
+      <div class="brand"><span class="brand-mark">SL</span><span>SignalLedger</span></div>
+      <p>Built for BLI Legal Tech Hackathon 2 · Chainlink CRE + Autonomous Agents</p>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
+

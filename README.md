@@ -4,7 +4,7 @@
 
 SignalLedger is a Chainlink Runtime Environment (CRE) workflow that combines two off-chain market data sources with a live EVM state read, applies a deterministic risk policy, and emits a reproducible Keccak-256 decision trace. It never signs or submits a trade.
 
-[Open the interactive demo](https://idforfugen.github.io/signalledger-cre/) · Built for [BLI Legal Tech Hackathon 2](https://dorahacks.io/hackathon/legal-hack-2026/detail)
+[Open the interactive demo](https://idforfugen.github.io/signalledger-cre/) · [Watch the 112-second narrated demo](https://github.com/idforfugen/signalledger-cre/releases/download/demo-v1/signalledger-demo-web.mp4) · [Demo release and thumbnail](https://github.com/idforfugen/signalledger-cre/releases/tag/demo-v1) · Built for [BLI Legal Tech Hackathon 2](https://dorahacks.io/hackathon/legal-hack-2026/detail)
 
 **CRE proof:** the official CRE CLI simulation completed successfully on 2026-10-04. See the [verified output, binary hash, config hash, and decision trace](evidence/cre-simulation.md).
 

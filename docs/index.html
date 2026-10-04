@@ -131,9 +131,14 @@
                 <small>Extreme fear or greed adds risk.</small>
               </label>
               <label>
-                <span><b>Market-feed age</b><output id="age-output">8 min</output></span>
-                <input id="age" type="range" min="0" max="120" value="8" step="1" />
-                <small>Fast-market evidence older than 60 minutes blocks the decision; daily sentiment has a separate 26-hour window.</small>
+                <span><b>Market-feed age</b><output id="market-age-output">8 min</output></span>
+                <input id="market-age" type="range" min="0" max="120" value="8" step="1" />
+                <small>Fast-market evidence older than 60 minutes blocks the decision.</small>
+              </label>
+              <label>
+                <span><b>Sentiment-feed age</b><output id="sentiment-age-output">4 hr</output></span>
+                <input id="sentiment-age" type="range" min="0" max="52" value="4" step="1" />
+                <small>The daily sentiment reading has its own 26-hour freshness window.</small>
               </label>
               <label class="toggle-row">
                 <span><b>On-chain supply check</b><small>Must return a positive value.</small></span>
@@ -155,10 +160,14 @@
               <div class="allocation"><span>Maximum simulated allocation</span><b id="allocation">25%</b></div>
               <div class="trace">
                 <span>Canonical trace</span>
-                <code id="trace-value">change=3.2|sentiment=58|age=480|supply=valid</code>
+                <code id="trace-value">change=3.2|sentiment=58|marketAgeSeconds=480|sentimentAgeSeconds=14400|supply=valid</code>
+              </div>
+              <div class="trace record-digest">
+                <span>Scenario record digest · SHA-256</span>
+                <code id="record-digest">Calculating…</code>
               </div>
               <div class="audit-export">
-                <button id="download-audit" type="button">
+                <button id="download-audit" type="button" disabled>
                   Download audit record <span>JSON ↓</span>
                 </button>
                 <p id="download-status" aria-live="polite">Portable JSON · same evidence produces the same record</p>
@@ -191,6 +200,6 @@
       <p>Built for BLI Legal Tech Hackathon 2 · Chainlink CRE + Autonomous Agents</p>
     </footer>
 
-    <script type="module" src="app.js?v=20261004-audit"></script>
+    <script type="module" src="app.js?v=20261004-freshness"></script>
   </body>
 </html>

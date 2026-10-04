@@ -35,8 +35,8 @@ The repository contains no signer, private key, transaction construction, or bro
 - Independent freshness windows for fast market data (1 hour) and daily sentiment (26 hours)
 - Fail-closed policy for stale evidence or invalid chain state
 - Deterministic risk score, practice action, allocation ceiling, rationale, and Keccak-256 trace
-- Portable JSON audit record linked to the verified CRE run, with explicit no-sign/no-broadcast controls
-- 19 passing tests: 15 workflow/integration tests and 4 interactive audit-record tests
+- Portable JSON audit record with a deterministic SHA-256 integrity digest, explicit freshness policy, verified CRE reference, and no-sign/no-broadcast controls
+- 22 passing tests: 15 workflow/integration tests and 7 interactive audit-record tests
 - Successful official CRE CLI simulation with recorded binary/config hashes and decision trace
 - Strict TypeScript check
 - Responsive, zero-build interactive scenario lab
@@ -63,10 +63,10 @@ Open the landing page. Explain that market-agent outputs are hard to audit: revi
 Show the three source cards: the BTC market ticker, Fear & Greed sentiment, and the Sepolia USDC contract read. Explain that CRE reconciles the external fields through DON consensus before policy evaluation.
 
 **0:50–1:20 — Cause and effect**  
-Use the scenario lab. Move BTC change above 3% with mid-range sentiment to produce `PRACTICE_LONG`; move the market feed past 60 minutes to show `BLOCKED_STALE_OR_INVALID`; disable the chain-supply gate to show another fail-closed result.
+Use the scenario lab. Move BTC change above 3% with mid-range sentiment to produce `PRACTICE_LONG`; move the market feed past 60 minutes or the sentiment feed past 26 hours to show the independent freshness gates; disable the chain-supply gate to show another fail-closed result.
 
 **1:20–1:45 — Reproducibility**  
-Show the canonical trace, download its portable JSON audit record, then show the workflow code that turns the trace into a Keccak-256 hash. Note that identical evidence produces the same record and audit hash.
+Show the canonical trace and the scenario record's SHA-256 integrity digest, then download its portable JSON audit record. Connect that record to the verified CRE run and the workflow's Keccak-256 decision hash. Note that identical evidence produces the same digest and decision.
 
 **1:45–2:00 — CRE proof and safety**  
 Show the successful CRE CLI simulation output and the test run. End on the hard boundary: no signer, no broadcast, no real trades.

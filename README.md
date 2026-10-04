@@ -51,7 +51,7 @@ The policy can return `HOLD`, `PRACTICE_LONG`, `WATCH_REVERSAL`, `REDUCE_EXPOSUR
 - Produces a practice-only position decision and hard allocation cap
 - Records the precise rationale and a canonical, reproducible audit hash
 - Includes an interactive scenario lab that exposes every policy transition
-- Exports a portable, deterministic JSON audit record linked to the verified CRE run
+- Exports a portable, deterministic JSON audit record with its own SHA-256 integrity digest, the active freshness policy, and a link to the verified CRE run
 
 ## Run locally
 

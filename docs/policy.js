@@ -13,6 +13,13 @@ const assertFinite = (label, value) => {
   if (!Number.isFinite(value)) throw new TypeError(`${label} must be a finite number`)
 }
 
+const assertRange = (label, value, minimum, maximum) => {
+  assertFinite(label, value)
+  if (value < minimum || value > maximum) {
+    throw new RangeError(`${label} must be between ${minimum} and ${maximum}`)
+  }
+}
+
 const riskFromChange = (change) => {
   const magnitude = Math.abs(change)
   if (magnitude >= 10) return 45
@@ -29,12 +36,24 @@ const riskFromSentiment = (sentiment) => {
   return 5
 }
 
-export function evaluateScenario({ change, sentiment, ageMinutes, validSupply }) {
+export function evaluateScenario({
+  change,
+  sentiment,
+  marketAgeMinutes,
+  sentimentAgeHours,
+  validSupply,
+}) {
   assertFinite('change', change)
-  assertFinite('sentiment', sentiment)
-  assertFinite('ageMinutes', ageMinutes)
+  assertRange('sentiment', sentiment, 0, 100)
+  assertRange('marketAgeMinutes', marketAgeMinutes, 0, Number.MAX_SAFE_INTEGER)
+  assertRange('sentimentAgeHours', sentimentAgeHours, 0, Number.MAX_SAFE_INTEGER)
+  if (typeof validSupply !== 'boolean') {
+    throw new TypeError('validSupply must be a boolean')
+  }
 
-  const stale = ageMinutes > 60
+  const staleMarket = marketAgeMinutes > 60
+  const staleSentiment = sentimentAgeHours > 26
+  const stale = staleMarket || staleSentiment
   let risk = riskFromChange(change) + riskFromSentiment(sentiment)
   if (stale) risk += 50
   if (!validSupply) risk += 100
@@ -46,9 +65,11 @@ export function evaluateScenario({ change, sentiment, ageMinutes, validSupply })
 
   if (stale || !validSupply) {
     action = 'BLOCKED_STALE_OR_INVALID'
-    rationale = stale
-      ? 'Evidence exceeded the 60-minute freshness limit.'
-      : 'The on-chain supply gate did not return a valid value.'
+    const failures = []
+    if (staleMarket) failures.push('Market evidence exceeded the 60-minute freshness limit.')
+    if (staleSentiment) failures.push('Sentiment evidence exceeded the 26-hour freshness limit.')
+    if (!validSupply) failures.push('The on-chain supply gate did not return a valid value.')
+    rationale = failures.join(' ')
   } else if (risk >= 70) {
     action = 'REDUCE_EXPOSURE'
     allocation = 20
@@ -66,7 +87,8 @@ export function evaluateScenario({ change, sentiment, ageMinutes, validSupply })
   const canonicalTrace = [
     `change=${change}`,
     `sentiment=${sentiment}`,
-    `age=${ageMinutes * 60}`,
+    `marketAgeSeconds=${marketAgeMinutes * 60}`,
+    `sentimentAgeSeconds=${sentimentAgeHours * 60 * 60}`,
     `supply=${validSupply ? 'valid' : 'invalid'}`,
     `risk=${risk}`,
     `action=${action}`,
@@ -77,7 +99,8 @@ export function evaluateScenario({ change, sentiment, ageMinutes, validSupply })
     evidence: {
       btc24hChangePercent: change,
       sentimentScore: sentiment,
-      marketFeedAgeSeconds: ageMinutes * 60,
+      marketFeedAgeSeconds: marketAgeMinutes * 60,
+      sentimentFeedAgeSeconds: sentimentAgeHours * 60 * 60,
       onChainSupplyGate: validSupply ? 'valid' : 'invalid',
     },
     decision: {
@@ -98,11 +121,38 @@ export function buildAuditRecord(result) {
     evidence: result.evidence,
     decision: result.decision,
     canonicalTrace: result.canonicalTrace,
+    policy: {
+      identifier: 'signalledger.practice-policy.v1',
+      marketMaxAgeSeconds: 3600,
+      sentimentMaxAgeSeconds: 93600,
+      requiresPositiveOnChainSupply: true,
+      implementationUrl:
+        'https://github.com/idforfugen/signalledger-cre/blob/main/docs/policy.js',
+    },
     verifiedCreReference: VERIFIED_CRE_REFERENCE,
     safetyControls: {
       broadcastsTransactions: false,
       accessesPrivateKeys: false,
       signsTransactions: false,
+    },
+  }
+}
+
+const toHex = (bytes) =>
+  Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('')
+
+export async function sealAuditRecord(record, cryptoProvider = globalThis.crypto) {
+  if (!cryptoProvider?.subtle) throw new Error('Web Crypto is required to seal the audit record')
+
+  const payload = new TextEncoder().encode(JSON.stringify(record))
+  const digest = await cryptoProvider.subtle.digest('SHA-256', payload)
+
+  return {
+    ...record,
+    recordDigest: {
+      algorithm: 'SHA-256',
+      value: `0x${toHex(new Uint8Array(digest))}`,
+      scope: 'UTF-8 JSON of this record before recordDigest is attached',
     },
   }
 }

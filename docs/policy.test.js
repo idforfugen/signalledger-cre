@@ -11,6 +11,7 @@ const baseScenario = {
   sentiment: 58,
   marketAgeMinutes: 8,
   sentimentAgeHours: 4,
+  maxAllocationPercent: 25,
   validSupply: true,
 }
 
@@ -24,11 +25,12 @@ describe('interactive audit record', () => {
       action: 'PRACTICE_LONG',
       riskScore: 20,
       maxSimulatedAllocationPercent: 25,
+      configuredMaxAllocationPercent: 25,
       rationale: 'Positive momentum with non-extreme sentiment.',
       practiceOnly: true,
     })
     expect(first.canonicalTrace).toBe(
-      'change=3.2|sentiment=58|marketAgeSeconds=480|sentimentAgeSeconds=14400|supply=valid|risk=20|action=PRACTICE_LONG|practiceOnly=true',
+      'change=3.2|sentiment=58|marketAgeSeconds=480|sentimentAgeSeconds=14400|supply=valid|configuredMaxAllocationBps=2500|risk=20|action=PRACTICE_LONG|practiceOnly=true',
     )
   })
 
@@ -55,6 +57,15 @@ describe('interactive audit record', () => {
     expect(stale.decision.rationale).toContain('26-hour freshness limit')
   })
 
+  test('honors a user-defined allocation ceiling', () => {
+    const result = evaluateScenario({ ...baseScenario, maxAllocationPercent: 6 })
+
+    expect(result.decision.action).toBe('PRACTICE_LONG')
+    expect(result.decision.maxSimulatedAllocationPercent).toBe(6)
+    expect(result.decision.configuredMaxAllocationPercent).toBe(6)
+    expect(result.canonicalTrace).toContain('configuredMaxAllocationBps=600')
+  })
+
   test('seals identical records with the same portable digest', async () => {
     const record = buildAuditRecord(evaluateScenario(baseScenario))
     const first = await sealAuditRecord(record)
@@ -67,6 +78,8 @@ describe('interactive audit record', () => {
       identifier: 'signalledger.practice-policy.v1',
       marketMaxAgeSeconds: 3600,
       sentimentMaxAgeSeconds: 93600,
+      systemMaxAllocationBps: 2500,
+      configuredMaxAllocationBps: 2500,
       requiresPositiveOnChainSupply: true,
       implementationUrl:
         'https://github.com/idforfugen/signalledger-cre/blob/main/docs/policy.js',
@@ -78,7 +91,7 @@ describe('interactive audit record', () => {
 
     expect(record.verifiedCreReference).toBe(VERIFIED_CRE_REFERENCE)
     expect(record.verifiedCreReference.auditHash).toBe(
-      '0xb08177f1727c954d495cc38849645be97863318f9001d402d01c6b021e62ba3e',
+      '0x01ff876154d8c0544daeb43bf71c5b7969bf35cf86352ec2fd43ff7698a65f8a',
     )
   })
 
@@ -94,6 +107,9 @@ describe('interactive audit record', () => {
     )
     expect(() => evaluateScenario({ ...baseScenario, marketAgeMinutes: -1 })).toThrow(
       'marketAgeMinutes must be between 0',
+    )
+    expect(() => evaluateScenario({ ...baseScenario, maxAllocationPercent: 26 })).toThrow(
+      'maxAllocationPercent must be between 0 and 25',
     )
   })
 })

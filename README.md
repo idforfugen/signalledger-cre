@@ -48,7 +48,7 @@ The policy can return `HOLD`, `PRACTICE_LONG`, `WATCH_REVERSAL`, `REDUCE_EXPOSUR
 ### Autonomous Agents
 
 - Interprets price, momentum, sentiment, freshness, and on-chain evidence
-- Produces a practice-only position decision and hard allocation cap
+- Produces a practice-only position decision with a user-configured ceiling under a hard 25% system cap
 - Records the precise rationale and a canonical, reproducible audit hash
 - Includes an interactive scenario lab that exposes every policy transition
 - Exports a portable, deterministic JSON audit record with its own SHA-256 integrity digest, the active freshness policy, and a link to the verified CRE run
@@ -80,9 +80,9 @@ Then open `http://localhost:8080`.
 | Condition | Practice output | Allocation ceiling |
 |---|---:|---:|
 | Market evidence older than 60 minutes, daily sentiment older than 26 hours, or invalid on-chain supply | `BLOCKED_STALE_OR_INVALID` | 0% |
-| Combined risk score ≥ 70 | `REDUCE_EXPOSURE` | 20% |
-| 24h change ≥ 3% and sentiment is 45–75 | `PRACTICE_LONG` | 25% |
-| 24h change ≤ -3% and sentiment ≤ 35 | `WATCH_REVERSAL` | 10% |
+| Combined risk score ≥ 70 | `REDUCE_EXPOSURE` | min(20%, user ceiling) |
+| 24h change ≥ 3% and sentiment is 45–75 | `PRACTICE_LONG` | min(25%, user ceiling) |
+| 24h change ≤ -3% and sentiment ≤ 35 | `WATCH_REVERSAL` | min(10%, user ceiling) |
 | Any other valid state | `HOLD` | 0% |
 
 The implementation in [`my-workflow/workflow.ts`](my-workflow/workflow.ts) is the source of truth.

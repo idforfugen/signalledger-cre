@@ -1,6 +1,6 @@
 # Verified CRE CLI simulation
 
-Simulation date: 2026-10-04 02:59 Asia/Shanghai  
+Simulation date: 2026-10-04 08:30 Asia/Shanghai
 CRE CLI: v1.36.0  
 Mode: local simulation, no broadcast
 
@@ -18,8 +18,8 @@ cre workflow simulate my-workflow \
 ```text
 ✓ Workflow compiled
 ✓ Simulation limits enabled
-Binary hash: 0a2d5d9a446af31e5642cbee9b787a49a76cdf48133c272e8fb917068ab97689
-Config hash: d9114c1996d7a9b6f890b5c8fb90c8aa5b873572820a2fd319e238f133335ef4
+Binary hash: 76e7256265bd0ad6309463a346e05defa70a22982f001078d744ec73481373fe
+Config hash: 239acd1d464a76e4953b736e9223a593ea12ca931cade6133ebf7f670dc94403
 ✓ Workflow Simulation Result
 Simulation complete!
 ```
@@ -32,35 +32,35 @@ Simulation complete!
   "asset": "bitcoin",
   "evidence": {
     "market": {
-      "priceUsd": 84924,
-      "change24hPct": 0.89082,
-      "marketCapUsd": 1706397122060,
-      "updatedAt": 1791053550
+      "priceUsd": 84804,
+      "change24hPct": 0.3194,
+      "marketCapUsd": 1703989939190,
+      "updatedAt": 1791073640
     },
     "sentiment": {
-      "fearGreed": 67,
-      "updatedAt": 1790985600
+      "fearGreed": 65,
+      "updatedAt": 1791072000
     },
     "chain": "ethereum-testnet-sepolia",
     "stablecoinAddress": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
-    "stablecoinSupplyBaseUnits": "10742413123494819302"
+    "stablecoinSupplyBaseUnits": "10742412907338884453"
   },
   "decision": {
     "action": "HOLD",
     "riskScore": 10,
     "maxAllocationBps": 0,
     "rationale": [
-      "24h change 0.89%",
-      "Fear & Greed 67/100",
-      "market evidence age 450s",
-      "sentiment evidence age 68400s",
+      "24h change 0.32%",
+      "Fear & Greed 65/100",
+      "market evidence age 760s",
+      "sentiment evidence age 2400s",
+      "configured allocation ceiling 25.00%",
       "no configured edge; preserve optionality"
     ],
-    "auditHash": "0xb08177f1727c954d495cc38849645be97863318f9001d402d01c6b021e62ba3e",
+    "auditHash": "0x01ff876154d8c0544daeb43bf71c5b7969bf35cf86352ec2fd43ff7698a65f8a",
     "practiceOnly": true
   }
 }
 ```
 
 The warning about a default simulation key is emitted by the CLI for all EVM simulations. SignalLedger performs only `eth_call`; the workflow contains no chain-write handler and the command did not use `--broadcast`.
-

@@ -27,7 +27,11 @@ const config: Config = {
     decimals: 6,
     isTestnet: true,
   },
-  risk: { marketMaxAgeSeconds: 3600, sentimentMaxAgeSeconds: 93600 },
+  risk: {
+    marketMaxAgeSeconds: 3600,
+    sentimentMaxAgeSeconds: 93600,
+    maxPracticeAllocationBps: 2500,
+  },
 }
 
 const makeRequester = (body: unknown, statusCode = 200) =>
@@ -50,11 +54,18 @@ const baseInput = {
   evaluatedAt: 1_700_000_300,
   marketMaxAgeSeconds: 3600,
   sentimentMaxAgeSeconds: 93600,
+  maxPracticeAllocationBps: 2500,
 }
 
 describe('evidence adapters', () => {
   test('accepts HTTPS data sources without the browser URL global', () => {
     expect(configSchema.safeParse(config).success).toBe(true)
+    expect(
+      configSchema.safeParse({
+        ...config,
+        risk: { ...config.risk, maxPracticeAllocationBps: 2501 },
+      }).success,
+    ).toBe(false)
   })
 
   test('rejects non-HTTPS data sources', () => {
@@ -128,6 +139,18 @@ describe('deterministic practice policy', () => {
     })
     expect(result.action).toBe('PRACTICE_LONG')
     expect(result.maxAllocationBps).toBe(2500)
+  })
+
+  test('honors a user-configured allocation ceiling', () => {
+    const result = buildPracticeDecision({
+      ...baseInput,
+      market: { ...baseInput.market, change24hPct: 4 },
+      sentiment: { ...baseInput.sentiment, fearGreed: 58 },
+      maxPracticeAllocationBps: 600,
+    })
+    expect(result.action).toBe('PRACTICE_LONG')
+    expect(result.maxAllocationBps).toBe(600)
+    expect(result.rationale).toContain('configured allocation ceiling 6.00%')
   })
 
   test('watches for reversal without executing', () => {

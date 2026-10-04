@@ -34,9 +34,10 @@ The repository contains no signer, private key, transaction construction, or bro
 - Read-only ERC-20 state query through the CRE EVM client
 - Independent freshness windows for fast market data (1 hour) and daily sentiment (26 hours)
 - Fail-closed policy for stale evidence or invalid chain state
+- User-configured allocation ceiling that can reduce but never raise the 25% system cap
 - Deterministic risk score, practice action, allocation ceiling, rationale, and Keccak-256 trace
 - Portable JSON audit record with a deterministic SHA-256 integrity digest, explicit freshness policy, verified CRE reference, and no-sign/no-broadcast controls
-- 22 passing tests: 15 workflow/integration tests and 7 interactive audit-record tests
+- 24 passing tests: 16 workflow/integration tests and 8 interactive audit-record tests
 - Successful official CRE CLI simulation with recorded binary/config hashes and decision trace
 - Strict TypeScript check
 - Responsive, zero-build interactive scenario lab
@@ -63,7 +64,7 @@ Open the landing page. Explain that market-agent outputs are hard to audit: revi
 Show the three source cards: the BTC market ticker, Fear & Greed sentiment, and the Sepolia USDC contract read. Explain that CRE reconciles the external fields through DON consensus before policy evaluation.
 
 **0:50–1:20 — Cause and effect**  
-Use the scenario lab. Move BTC change above 3% with mid-range sentiment to produce `PRACTICE_LONG`; move the market feed past 60 minutes or the sentiment feed past 26 hours to show the independent freshness gates; disable the chain-supply gate to show another fail-closed result.
+Use the scenario lab. Move BTC change above 3% with mid-range sentiment to produce `PRACTICE_LONG`; lower the user allocation ceiling to show that the system respects it; move the market feed past 60 minutes or the sentiment feed past 26 hours to show the independent freshness gates; disable the chain-supply gate to show another fail-closed result.
 
 **1:20–1:45 — Reproducibility**  
 Show the canonical trace and the scenario record's SHA-256 integrity digest, then download its portable JSON audit record. Connect that record to the verified CRE run and the workflow's Keccak-256 decision hash. Note that identical evidence produces the same digest and decision.

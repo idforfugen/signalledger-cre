@@ -64,13 +64,13 @@
             <div class="source-top"><span>01</span><span class="live">LIVE API</span></div>
             <h3>Market motion</h3>
             <p>BTC price, 24-hour change, market cap, and freshness from a live market ticker.</p>
-            <div class="metric"><span>Verified run</span><b>+0.89%</b></div>
+            <div class="metric"><span>Verified run</span><b>+0.32%</b></div>
           </article>
           <article class="source-card">
             <div class="source-top"><span>02</span><span class="live">LIVE API</span></div>
             <h3>Market sentiment</h3>
             <p>Fear &amp; Greed supplies a second, independent context signal.</p>
-            <div class="metric"><span>Verified run</span><b>67 / 100</b></div>
+            <div class="metric"><span>Verified run</span><b>65 / 100</b></div>
           </article>
           <article class="source-card">
             <div class="source-top"><span>03</span><span class="chain">ON-CHAIN</span></div>
@@ -103,9 +103,9 @@
             <div class="terminal-top"><span></span><span></span><span></span><b>CRE SIMULATION</b></div>
             <div class="terminal-row"><span>STATUS</span><strong>✓ Simulation complete</strong></div>
             <div class="terminal-row"><span>ACTION</span><strong>HOLD · risk 10/100</strong></div>
-            <div class="terminal-row hash"><span>BINARY</span><code>0a2d5d9a446af31e5642cbee9b787a49a76cdf48133c272e8fb917068ab97689</code></div>
-            <div class="terminal-row hash"><span>CONFIG</span><code>d9114c1996d7a9b6f890b5c8fb90c8aa5b873572820a2fd319e238f133335ef4</code></div>
-            <div class="terminal-row hash"><span>AUDIT</span><code>0xb08177f1727c954d495cc38849645be97863318f9001d402d01c6b021e62ba3e</code></div>
+            <div class="terminal-row hash"><span>BINARY</span><code>76e7256265bd0ad6309463a346e05defa70a22982f001078d744ec73481373fe</code></div>
+            <div class="terminal-row hash"><span>CONFIG</span><code>239acd1d464a76e4953b736e9223a593ea12ca931cade6133ebf7f670dc94403</code></div>
+            <div class="terminal-row hash"><span>AUDIT</span><code>0x01ff876154d8c0544daeb43bf71c5b7969bf35cf86352ec2fd43ff7698a65f8a</code></div>
             <div class="terminal-foot"><span class="pulse"></span> no broadcast · read only · practice only</div>
           </div>
         </div>
@@ -140,6 +140,11 @@
                 <input id="sentiment-age" type="range" min="0" max="52" value="4" step="1" />
                 <small>The daily sentiment reading has its own 26-hour freshness window.</small>
               </label>
+              <label>
+                <span><b>User allocation ceiling</b><output id="max-allocation-output">25%</output></span>
+                <input id="max-allocation" type="range" min="0" max="25" value="25" step="1" />
+                <small>User policy can reduce—but never raise—the system's 25% practice limit.</small>
+              </label>
               <label class="toggle-row">
                 <span><b>On-chain supply check</b><small>Must return a positive value.</small></span>
                 <input id="supply" type="checkbox" checked />
@@ -160,7 +165,7 @@
               <div class="allocation"><span>Maximum simulated allocation</span><b id="allocation">25%</b></div>
               <div class="trace">
                 <span>Canonical trace</span>
-                <code id="trace-value">change=3.2|sentiment=58|marketAgeSeconds=480|sentimentAgeSeconds=14400|supply=valid</code>
+                <code id="trace-value">change=3.2|sentiment=58|marketAgeSeconds=480|sentimentAgeSeconds=14400|supply=valid|configuredMaxAllocationBps=2500</code>
               </div>
               <div class="trace record-digest">
                 <span>Scenario record digest · SHA-256</span>
@@ -200,6 +205,6 @@
       <p>Built for BLI Legal Tech Hackathon 2 · Chainlink CRE + Autonomous Agents</p>
     </footer>
 
-    <script type="module" src="app.js?v=20261004-freshness"></script>
+    <script type="module" src="app.js?v=20261004-risk-limit"></script>
   </body>
 </html>

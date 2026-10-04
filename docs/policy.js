@@ -3,9 +3,9 @@ export const VERIFIED_CRE_REFERENCE = Object.freeze({
   cliVersion: '1.36.0',
   network: 'ethereum-sepolia',
   usdcContract: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
-  binaryHash: '0a2d5d9a446af31e5642cbee9b787a49a76cdf48133c272e8fb917068ab97689',
-  configHash: 'd9114c1996d7a9b6f890b5c8fb90c8aa5b873572820a2fd319e238f133335ef4',
-  auditHash: '0xb08177f1727c954d495cc38849645be97863318f9001d402d01c6b021e62ba3e',
+  binaryHash: '76e7256265bd0ad6309463a346e05defa70a22982f001078d744ec73481373fe',
+  configHash: '239acd1d464a76e4953b736e9223a593ea12ca931cade6133ebf7f670dc94403',
+  auditHash: '0x01ff876154d8c0544daeb43bf71c5b7969bf35cf86352ec2fd43ff7698a65f8a',
   evidenceUrl: 'https://github.com/idforfugen/signalledger-cre/blob/main/evidence/cre-simulation.md',
 })
 
@@ -41,12 +41,14 @@ export function evaluateScenario({
   sentiment,
   marketAgeMinutes,
   sentimentAgeHours,
+  maxAllocationPercent,
   validSupply,
 }) {
   assertFinite('change', change)
   assertRange('sentiment', sentiment, 0, 100)
   assertRange('marketAgeMinutes', marketAgeMinutes, 0, Number.MAX_SAFE_INTEGER)
   assertRange('sentimentAgeHours', sentimentAgeHours, 0, Number.MAX_SAFE_INTEGER)
+  assertRange('maxAllocationPercent', maxAllocationPercent, 0, 25)
   if (typeof validSupply !== 'boolean') {
     throw new TypeError('validSupply must be a boolean')
   }
@@ -61,6 +63,7 @@ export function evaluateScenario({
 
   let action = 'HOLD'
   let allocation = 0
+  const configuredMaxAllocationBps = Math.round(maxAllocationPercent * 100)
   let rationale = 'No configured edge; preserve optionality.'
 
   if (stale || !validSupply) {
@@ -72,15 +75,15 @@ export function evaluateScenario({
     rationale = failures.join(' ')
   } else if (risk >= 70) {
     action = 'REDUCE_EXPOSURE'
-    allocation = 20
+    allocation = Math.min(20, maxAllocationPercent)
     rationale = 'Combined volatility and sentiment risk crossed 70.'
   } else if (change >= 3 && sentiment >= 45 && sentiment <= 75) {
     action = 'PRACTICE_LONG'
-    allocation = 25
+    allocation = Math.min(25, maxAllocationPercent)
     rationale = 'Positive momentum with non-extreme sentiment.'
   } else if (change <= -3 && sentiment <= 35) {
     action = 'WATCH_REVERSAL'
-    allocation = 10
+    allocation = Math.min(10, maxAllocationPercent)
     rationale = 'Oversold conditions detected; wait for confirmation.'
   }
 
@@ -90,6 +93,7 @@ export function evaluateScenario({
     `marketAgeSeconds=${marketAgeMinutes * 60}`,
     `sentimentAgeSeconds=${sentimentAgeHours * 60 * 60}`,
     `supply=${validSupply ? 'valid' : 'invalid'}`,
+    `configuredMaxAllocationBps=${configuredMaxAllocationBps}`,
     `risk=${risk}`,
     `action=${action}`,
     'practiceOnly=true',
@@ -107,6 +111,7 @@ export function evaluateScenario({
       action,
       riskScore: risk,
       maxSimulatedAllocationPercent: allocation,
+      configuredMaxAllocationPercent: maxAllocationPercent,
       rationale,
       practiceOnly: true,
     },
@@ -125,6 +130,10 @@ export function buildAuditRecord(result) {
       identifier: 'signalledger.practice-policy.v1',
       marketMaxAgeSeconds: 3600,
       sentimentMaxAgeSeconds: 93600,
+      systemMaxAllocationBps: 2500,
+      configuredMaxAllocationBps: Math.round(
+        result.decision.configuredMaxAllocationPercent * 100,
+      ),
       requiresPositiveOnChainSupply: true,
       implementationUrl:
         'https://github.com/idforfugen/signalledger-cre/blob/main/docs/policy.js',

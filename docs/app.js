@@ -4,6 +4,7 @@ const changeInput = document.querySelector('#change')
 const sentimentInput = document.querySelector('#sentiment')
 const marketAgeInput = document.querySelector('#market-age')
 const sentimentAgeInput = document.querySelector('#sentiment-age')
+const maxAllocationInput = document.querySelector('#max-allocation')
 const supplyInput = document.querySelector('#supply')
 const downloadButton = document.querySelector('#download-audit')
 const downloadStatus = document.querySelector('#download-status')
@@ -17,12 +18,14 @@ async function evaluate() {
   const sentiment = Number(sentimentInput.value)
   const marketAgeMinutes = Number(marketAgeInput.value)
   const sentimentAgeHours = Number(sentimentAgeInput.value)
+  const maxAllocationPercent = Number(maxAllocationInput.value)
   const validSupply = supplyInput.checked
   const result = evaluateScenario({
     change,
     sentiment,
     marketAgeMinutes,
     sentimentAgeHours,
+    maxAllocationPercent,
     validSupply,
   })
   const { action, riskScore, maxSimulatedAllocationPercent, rationale } = result.decision
@@ -33,6 +36,7 @@ async function evaluate() {
   document.querySelector('#sentiment-output').textContent = sentiment
   document.querySelector('#market-age-output').textContent = `${marketAgeMinutes} min`
   document.querySelector('#sentiment-age-output').textContent = `${sentimentAgeHours} hr`
+  document.querySelector('#max-allocation-output').textContent = `${maxAllocationPercent}%`
   document.querySelector('#risk-score').textContent = riskScore
   document.querySelector('#score-ring').style.setProperty('--score', riskScore)
   document.querySelector('#action').textContent = action
@@ -74,7 +78,14 @@ function downloadAuditRecord() {
   downloadStatus.textContent = 'Audit record downloaded · no data left this browser'
 }
 
-for (const input of [changeInput, sentimentInput, marketAgeInput, sentimentAgeInput, supplyInput]) {
+for (const input of [
+  changeInput,
+  sentimentInput,
+  marketAgeInput,
+  sentimentAgeInput,
+  maxAllocationInput,
+  supplyInput,
+]) {
   input.addEventListener('input', evaluate)
   input.addEventListener('change', evaluate)
 }

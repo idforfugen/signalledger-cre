@@ -11,6 +11,7 @@
   },
   "risk": {
     "marketMaxAgeSeconds": 3600,
-    "sentimentMaxAgeSeconds": 93600
+    "sentimentMaxAgeSeconds": 93600,
+    "maxPracticeAllocationBps": 2500
   }
 }

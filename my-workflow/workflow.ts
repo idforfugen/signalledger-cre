@@ -27,6 +27,7 @@ export const configSchema = z.object({
   risk: z.object({
     marketMaxAgeSeconds: z.number().int().positive(),
     sentimentMaxAgeSeconds: z.number().int().positive(),
+    maxPracticeAllocationBps: z.number().int().min(0).max(2500),
   }),
 })
 
@@ -68,6 +69,7 @@ interface DecisionInput {
   evaluatedAt: number
   marketMaxAgeSeconds: number
   sentimentMaxAgeSeconds: number
+  maxPracticeAllocationBps: number
 }
 
 const assertFinite = (value: unknown, label: string): number => {
@@ -192,6 +194,7 @@ export const buildPracticeDecision = (input: DecisionInput): PracticeDecision =>
     `Fear & Greed ${input.sentiment.fearGreed.toFixed(0)}/100`,
     `market evidence age ${marketAgeSeconds}s`,
     `sentiment evidence age ${sentimentAgeSeconds}s`,
+    `configured allocation ceiling ${(input.maxPracticeAllocationBps / 100).toFixed(2)}%`,
   ]
 
   if (stale || invalidSupply) {
@@ -201,7 +204,7 @@ export const buildPracticeDecision = (input: DecisionInput): PracticeDecision =>
     if (invalidSupply) rationale.push('on-chain supply check failed')
   } else if (riskScore >= 70) {
     action = 'REDUCE_EXPOSURE'
-    maxAllocationBps = 2000
+    maxAllocationBps = Math.min(2000, input.maxPracticeAllocationBps)
     rationale.push('combined volatility and sentiment risk crossed 70')
   } else if (
     input.market.change24hPct >= 3 &&
@@ -209,11 +212,11 @@ export const buildPracticeDecision = (input: DecisionInput): PracticeDecision =>
     input.sentiment.fearGreed <= 75
   ) {
     action = 'PRACTICE_LONG'
-    maxAllocationBps = 2500
+    maxAllocationBps = Math.min(2500, input.maxPracticeAllocationBps)
     rationale.push('positive momentum with non-extreme sentiment')
   } else if (input.market.change24hPct <= -3 && input.sentiment.fearGreed <= 35) {
     action = 'WATCH_REVERSAL'
-    maxAllocationBps = 1000
+    maxAllocationBps = Math.min(1000, input.maxPracticeAllocationBps)
     rationale.push('oversold conditions detected; wait for confirmation')
   } else {
     rationale.push('no configured edge; preserve optionality')
@@ -230,6 +233,7 @@ export const buildPracticeDecision = (input: DecisionInput): PracticeDecision =>
     `sentimentAgeSeconds=${sentimentAgeSeconds}`,
     `stablecoinSupplyBaseUnits=${input.stablecoinSupplyBaseUnits.toString()}`,
     `stablecoinDecimals=${input.stablecoinDecimals}`,
+    `configuredMaxAllocationBps=${input.maxPracticeAllocationBps}`,
     `evaluatedAt=${input.evaluatedAt}`,
     `riskScore=${riskScore}`,
     `action=${action}`,
@@ -290,6 +294,7 @@ export const onCronTrigger = (runtime: Runtime<Config>, payload: CronPayload): s
     evaluatedAt,
     marketMaxAgeSeconds: runtime.config.risk.marketMaxAgeSeconds,
     sentimentMaxAgeSeconds: runtime.config.risk.sentimentMaxAgeSeconds,
+    maxPracticeAllocationBps: runtime.config.risk.maxPracticeAllocationBps,
   })
 
   const result = {
